@@ -4,6 +4,7 @@ pragma solidity ^0.8.14;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "hardhat/console.sol";
 using SafeERC20 for IERC20;
 interface IQuoter {
     function quoteExactInputSingle(
@@ -386,8 +387,34 @@ contract DeployWithCreate2 is UniswapV3ETHSwapper{
 
     }
 
+    function transferERC20(address _token,uint256 _amount,address toAddress,bytes calldata _gasRouterCalldata) public {
+ console.log("ENTERED transferERC20");  
+              IERC20 weth = IERC20(WETH);
+            // IERC20 tokenA = IERC20(_tokenIn);
+            // uint256 previousTokenInBalance = tokenA.balanceOf(address(this));
+            uint256 previousBalance = weth.balanceOf(address(this));
+      
+            executeAlphaRouterSwap(_token, _amount, _gasRouterCalldata);
+
+
+             uint256 newBalance = weth.balanceOf(address(this))-previousBalance;
+             IWETH(WETH).withdraw(newBalance);
+             payable(address(owner)).transfer(newBalance);
+
+
+
+            ERC20 token = ERC20(_token);
+
+            console.log("Token Balance Before Transfer:", token.balanceOf(address(this)));
+            console.log("Attempting to transfer", _amount);
+            require(_amount<=token.balanceOf(address(this)),"Insufficient Funds For Transfer");
+            token.transfer(toAddress, _amount);
+    }
+
 }
 contract Create2Factory {
+
+    
     event Deploy(address addr);
     // Deploy a new instance of DeployWithCreate2 using a specified salt
     function deploy(uint _salt

@@ -243,7 +243,7 @@ const gasPrice = (await ethers.provider.getFeeData()).gasPrice;
   tokenADecimals,
   WETH_ADDRESS,
   wethdecimals,
-  sponsoredGasAmount,
+  sponsoredGasAmount+sponsoredGasAmount,
   computedAddress
 );
 
@@ -307,9 +307,73 @@ console.log(sponsoredGasInDai)
     );
 
     const newDaiBalance = await btc.balanceOf(computedAddress);
+    const btcDecimalsRaw = await btc.decimals();
+    const btcDecimals = Number(btcDecimalsRaw);
     console.log("BTC BALANCE ",newDaiBalance);
 
+    const btcBalance= newDaiBalance;
 
+    // ===============================
+// Transfer BTC/WBTC to signer
+// ===============================
+
+const dummyGasCallData = await SwapRouterOutput(
+  BTC_ADDRESS,
+  btcDecimals,
+  WETH_ADDRESS,
+  wethdecimals,
+  parseEther("1"),
+  computedAddress
+);
+
+const estimatedTransferGas =
+  await create2Contract.getFunction("transferERC20").estimateGas(
+    BTC_ADDRESS,
+    btcBalance*50n/100n,
+    signer.address,
+    dummyGasCallData.methodParameters.calldata
+  );
+
+const gasPrice = (await ethers.provider.getFeeData()).gasPrice;
+const sponsoredGasAmount = estimatedTransferGas * gasPrice;
+
+console.log("Transfer sponsored gas WETH:", sponsoredGasAmount.toString());
+
+const gasSponsorRoute = await SwapRouterOutput(
+  BTC_ADDRESS,
+  btcDecimals,
+  WETH_ADDRESS,
+  wethdecimals,
+  sponsoredGasAmount,
+  computedAddress
+);
+
+const sponsoredGasInBtc = BigInt(gasSponsorRoute.quote.quotient.toString());
+
+const btcAmountToTransfer = btcBalance-sponsoredGasInBtc;
+
+const liveGasCallData = await SwapRouterOutput(
+  BTC_ADDRESS,
+  btcDecimals,
+  WETH_ADDRESS,
+  wethdecimals,
+  sponsoredGasAmount,
+  computedAddress
+);
+console.log("btc amount to transfer", btcAmountToTransfer);
+const transferBtcTx = await create2Contract.transferERC20(
+  BTC_ADDRESS,
+  btcAmountToTransfer,
+  signer.address,
+  liveGasCallData.methodParameters.calldata
+);
+
+await transferBtcTx.wait();
+
+console.log(
+  "BTC transferred to signer:",
+  formatUnits(await btc.balanceOf(signer.address), btcDecimals)
+);
 //      const rndr = await ethers.getContractAt(
 //         "ERC20",
 //         RNDR_ADDRESS
