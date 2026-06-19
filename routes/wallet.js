@@ -11,7 +11,7 @@ const SwapRouterOutput = require('../referenceFiles/alpharouterOutput')
 
 const CHAIN_ID = 31337
 const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-const CREATE2_FACTORY_ADDRESS = "0x6d4923d4873aaBCcF23d4585b127a0eFF1381C91"
+const CREATE2_FACTORY_ADDRESS = "0xC2c1C12f354CB5579414B9FBB48fa2993C157F63"
 
 const create2FactoryAbi = [
     {
@@ -145,7 +145,7 @@ router.post('/swap', fetchUser, async(req, res) => {
             tokenInDecimals,
             WETH_ADDRESS,
             wethDecimals,
-            parseEther('1'),
+            parseEther('0.5'),
             userAddress
         )
 

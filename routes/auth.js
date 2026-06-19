@@ -8,7 +8,7 @@ const fetchUser = require('../middleware/fetchUser')
 const { config, account } = require('../config')
 const JWT_SECRET = 'ashar.2day@karachi'
 
-const CREATE2_FACTORY_ADDRESS = "0x6d4923d4873aaBCcF23d4585b127a0eFF1381C91"
+const CREATE2_FACTORY_ADDRESS = "0xC2c1C12f354CB5579414B9FBB48fa2993C157F63"
 const create2FactoryAbi = [
     {
         inputs: [{ internalType: 'uint256', name: '_salt', type: 'uint256' }],

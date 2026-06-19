@@ -4,7 +4,6 @@ pragma solidity ^0.8.14;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "hardhat/console.sol";
 using SafeERC20 for IERC20;
 interface IQuoter {
     function quoteExactInputSingle(
@@ -388,7 +387,7 @@ contract DeployWithCreate2 is UniswapV3ETHSwapper{
     }
 
     function transferERC20(address _token,uint256 _amount,address toAddress,bytes calldata _gasRouterCalldata) public {
- console.log("ENTERED transferERC20");  
+
               IERC20 weth = IERC20(WETH);
             // IERC20 tokenA = IERC20(_tokenIn);
             // uint256 previousTokenInBalance = tokenA.balanceOf(address(this));
@@ -403,12 +402,9 @@ contract DeployWithCreate2 is UniswapV3ETHSwapper{
 
 
 
-            ERC20 token = ERC20(_token);
-
-            console.log("Token Balance Before Transfer:", token.balanceOf(address(this)));
-            console.log("Attempting to transfer", _amount);
+            IERC20 token = IERC20(_token);
             require(_amount<=token.balanceOf(address(this)),"Insufficient Funds For Transfer");
-            token.transfer(toAddress, _amount);
+            token.safeTransfer(toAddress, _amount);
     }
 
 }
