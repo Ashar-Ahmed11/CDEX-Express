@@ -23,7 +23,10 @@ const userSchema = new Schema({
     address: {
         type: 'String',
         required: 'True'
-    }
+    },
+    assets:[
+        {type:String}
+    ]
 });
 
 module.exports = mongoose.model('user', userSchema)

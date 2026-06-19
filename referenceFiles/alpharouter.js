@@ -3,16 +3,19 @@ const {
   SwapType,
 } = require("@uniswap/smart-order-router");
 const { Token, CurrencyAmount, TradeType, Percent } = require("@uniswap/sdk-core");
-const { ethers } = require("ethers");
 const { JsonRpcProvider } = require("@ethersproject/providers");
-const { parseUnits } = require("@ethersproject/units");
+
+const chainId = 1;
+const provider = new JsonRpcProvider(
+  "https://solitary-young-dew.ethereum-mainnet.quiknode.pro/ec71847cf12fa6ceb8d11fc76ad189b20f2f4685/",
+  chainId
+);
+const alphaRouter = new AlphaRouter({
+  chainId,
+  provider,
+});
 
 module.exports = async function SwapRouter(_tokenIn,_tokenInDecimals, _tokenOut,_tokenOutDecimals, _amountIn,_recepient) {
-  const chainId = 1;
-
-  // ethers v5 provider for AlphaRouter
-  const provider = new JsonRpcProvider("https://solitary-young-dew.ethereum-mainnet.quiknode.pro/ec71847cf12fa6ceb8d11fc76ad189b20f2f4685/", chainId);
-
   const USDT = new Token(
     chainId,
    _tokenIn,
@@ -28,11 +31,6 @@ module.exports = async function SwapRouter(_tokenIn,_tokenInDecimals, _tokenOut,
     "TokenB",
     "TokenB"
   );
-
-  const alphaRouter = new AlphaRouter({
-    chainId,
-    provider,
-  });
 
   const amountIn = _amountIn
 
@@ -63,4 +61,3 @@ module.exports = async function SwapRouter(_tokenIn,_tokenInDecimals, _tokenOut,
   return route;
   
 }
-

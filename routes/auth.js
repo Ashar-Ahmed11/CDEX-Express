@@ -8,7 +8,7 @@ const fetchUser = require('../middleware/fetchUser')
 const { config, account } = require('../config')
 const JWT_SECRET = 'ashar.2day@karachi'
 
-const CREATE2_FACTORY_ADDRESS = "0xC2c1C12f354CB5579414B9FBB48fa2993C157F63"
+const CREATE2_FACTORY_ADDRESS = "0x40D8D1afeeD9f58B78e70c0e2c0E80008f3E5931"
 const create2FactoryAbi = [
     {
         inputs: [{ internalType: 'uint256', name: '_salt', type: 'uint256' }],
@@ -50,7 +50,8 @@ router.post('/createuser', async(req, res) => {
             email: email,
             password: hash,
             salt: saltNumber,
-            address: generatedAddress
+            address: generatedAddress,
+            assets: []
         }
 
         const admin = await Admin.create(data)
